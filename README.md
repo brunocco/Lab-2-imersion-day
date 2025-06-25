@@ -69,6 +69,31 @@ Você pode usar qualquer editor de código ou IDE de sua escolha que suporte edi
 
 Você também pode baixar o [Visual Studio Code aqui](https://code.visualstudio.com/download)
 
+## 📑 Sumário
+
+### 🔧 Laboratório 1 – Configurando uma VPC com CloudFormation
+- [Visão geral](#visão-geral---laboratório-1)
+- [Criar Gateway de Internet](#criar-gateway-de-internet)
+- [Criar primeira sub-rede](#criar-primeira-sub-rede)
+- [Criar sub-rede adicional](#criar-sub-rede-adicional)
+- [Configurando a tabela de roteamento](#configurando-a-tabela-de-roteamento)
+- [Criar grupo de segurança](#criar-grupo-de-segurança)
+- [Complementos](#complementos)
+- [Resumo do Laboratório 1](#resumo-do-laboratório-1)
+
+### 🖥️ Laboratório 2 – Configurando uma instância EC2 com CloudFormation
+- [Visão geral](#visão-geral)
+- [Iniciar instância EC2](#iniciar-instância-ec2)
+- [Marcar e passar dados do usuário](#marcar-e-passar-dados-do-usuário-para-a-instância-ec2)
+- [Encerrar instância EC2](#encerrar-instância-ec2)
+- [Inicie a instância do EC2 no Lab VPC](#inicie-a-instância-do-ec2-no-lab-vpc)
+- [Complementos](#complementos)
+- [Resumo do Laboratório 2](#resumo-do-laboratório-2)
+- [Limpar](#limpar)
+- [Excluindo pilhas (limpeza)](#excluindo-pilhas-limpeza)
+
+### ✅ [Conclusão](#conclusão)
+
 # Laboratório 1 - Configurando uma VPC
 
 ## Visão geral
@@ -523,7 +548,7 @@ Outputs:
 ```
 
 
-# Laboratório 2 - Configurando uma instância EC2
+# Laboratório 2 - Configurando uma instância EC2 com CloudFormation
 ## Visão geral
 Este laboratório começará com o modelo mais básico imitando o laboratório prático Compute – Amazon EC2 para o AWS General Immersion Day.
 
