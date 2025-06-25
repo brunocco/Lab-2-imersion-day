@@ -72,31 +72,29 @@ Você também pode baixar o [Visual Studio Code aqui](https://code.visualstudio.
 ## 📑 Sumário
 
 ### 🔧 Laboratório 1 – Configurando uma VPC com CloudFormation
-- [Visão geral](#visão-geral---laboratório-1)
+- [Visão geral Lab 1](#visão-geral-lab-1)
 - [Criar Gateway de Internet](#criar-gateway-de-internet)
 - [Criar primeira sub-rede](#criar-primeira-sub-rede)
 - [Criar sub-rede adicional](#criar-sub-rede-adicional)
 - [Configurando a tabela de roteamento](#configurando-a-tabela-de-roteamento)
 - [Criar grupo de segurança](#criar-grupo-de-segurança)
-- [Complementos](#complementos)
+- [Complementos Lab 1](#complementos-lab-1)
 - [Resumo do Laboratório 1](#resumo-do-laboratório-1)
 
 ### 🖥️ Laboratório 2 – Configurando uma instância EC2 com CloudFormation
-- [Visão geral](#visão-geral)
+- [Visão geral Lab 2](#visão-geral-lab-2)
 - [Iniciar instância EC2](#iniciar-instância-ec2)
 - [Marcar e passar dados do usuário](#marcar-e-passar-dados-do-usuário-para-a-instância-ec2)
 - [Encerrar instância EC2](#encerrar-instância-ec2)
 - [Inicie a instância do EC2 no Lab VPC](#inicie-a-instância-do-ec2-no-lab-vpc)
-- [Complementos](#complementos)
+- [Complementos Lab 2](#complementos-lab-2)
 - [Resumo do Laboratório 2](#resumo-do-laboratório-2)
 - [Limpar](#limpar)
-- [Excluindo pilhas (limpeza)](#excluindo-pilhas-limpeza)
-
-### ✅ [Conclusão](#conclusão)
+- [Conclusão](#conclusão)
 
 # Laboratório 1 - Configurando uma VPC
 
-## Visão geral
+## Visão geral Lab 1
 Este laboratório começará com o modelo mais básico imitando o VPC Hands-on Lab para o AWS General Immersion Day.
 
 Ao final deste laboratório, você será capaz de:
@@ -397,7 +395,7 @@ Navegue até o console do AWS VPC para verificar o Grupo de Segurança.
 **Esta é a arquitetura atual até agora.**
 <img src="assets/14-5-cfn-createsg.png">
 
-## Complementos
+## Complementos Lab 1
 Nossa última etapa do Laboratório 1 é adicionar uma descrição ao modelo do CloudFormation e adicionar saídas.
 
 1. Adicione o seguinte ao **topo** do arquivo YAML chamado sfid-cfn-vpc.yaml
@@ -549,7 +547,7 @@ Outputs:
 
 
 # Laboratório 2 - Configurando uma instância EC2 com CloudFormation
-## Visão geral
+## Visão geral Lab 2
 Este laboratório começará com o modelo mais básico imitando o laboratório prático Compute – Amazon EC2 para o AWS General Immersion Day.
 
 Ao final deste laboratório, você será capaz de:
@@ -695,7 +693,7 @@ Verifique a aba “Segurança” e “Rede” no Console do AWS EC2 e você nota
 Você também pode obter o endereço IP público atribuído à instância do Amazon EC2, que exibirá a página abaixo:
 <img src="assets/Lab2-7-cfn-lab2-final.png">
 
-## Complementos
+## Complementos Lab 2
 Nossa última etapa do Laboratório 2 é adicionar uma descrição ao modelo do CloudFormation e adicionar saídas.
 
 1. Adicione o seguinte ao **topo** do arquivo YAML chamado sfid-cfn-ec2.yaml
