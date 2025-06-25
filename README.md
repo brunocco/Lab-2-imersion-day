@@ -133,6 +133,7 @@ SFID-CFN-VPC
 
 14. Abra o console do AWS VPC para verificar a VPC criada usando o AWS CloudFormation
 <img src="assets/9-cfn-vpccheck1.png">
+
 **Agora que criamos uma VPC simples, precisamos habilitar as opções de DNS e nomear a VPC “VPC para SFID CFN”.Agora que criamos uma VPC simples, precisamos habilitar as opções de DNS e nomear a VPC “VPC para SFID CFN”.**
 
 15. Adicione o seguinte ao final do arquivo YAML chamado sfid-cfn-vpc.yaml e salve o arquivo.
@@ -162,7 +163,7 @@ SFID-CFN-VPC
 25. Você pode deixar Configurar opções de pilha como padrão e clicar em **Avançar**.
 26. Verifique a lista Alterações na visualização do conjunto de alterações; que mostra como as alterações podem afetar os recursos em execução; neste caso, elas não afetarão nosso modelo.
 27. Clique em **Enviar**.
-<img src="assets/127-cfn-updatestackreview.png">
+<img src="assets/27-cfn-updatestackreview.png">
 
 28. Você pode clicar no botão de atualização algumas vezes até ver o status **UPDATE_COMPLETE**.
 <img src="assets/28-1-cfn-updatevpcfinal.png">
@@ -172,10 +173,72 @@ Navegue até o console do AWS VPC para verificar as opções de VPC Tag e DNS ha
 **Esta é a arquitetura atual até agora.**
 <img src="assets/28-3-cfn-createvpc.png">
 
+## Criar Gateway de Internet
+Nossa segunda etapa do Laboratório 1 é criar e anexar um Gateway de Internet
 
+1. Adicione o seguinte ao final do arquivo YAML chamado sfid-cfn-vpc.yaml e salve o arquivo.
+```yaml
+  # Create and attach InternetGateway
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    DependsOn: MainVPC
 
+  AttachIGW:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref MainVPC
+      InternetGatewayId: !Ref InternetGateway
+```
 
+2. Abra o console do AWS CloudFormation Stacks 
+3. Selecione o nome da pilha “SFID-CFN-VPC” na lista de pilhas
+4. Clique no botão **Atualizar**.
+5. Em Preparar modelo, escolha **Substituir modelo atual**.
+6. Em Origem do modelo, escolha **Carregar um arquivo de modelo**.
+7. Clique no botão **Escolher arquivo** e navegue até onde o sfid-cfn-vpc.yaml foi salvo
+8. Selecione o arquivo sfid-cfn-vpc.yaml e clique em **Abrir**.
+9. Clique em **Avançar**.
+10. Você pode deixar os Parâmetros já que nada foi definido e clicar em **Avançar**.
+11. Você pode deixar Configurar opções de pilha como padrão e clicar em **Avançar**.
+12. Verifique a lista Alterações na visualização do conjunto de alterações; que mostra como as alterações podem afetar os recursos em execução; neste caso, elas não afetarão nosso modelo.
+13. Clique em **Enviar**.
+14. Você pode clicar no botão de atualização algumas vezes até ver o status **UPDATE_COMPLETE**.
+Navegue até o console do AWS VPC para verificar o Gateway de Internet conectado à VPC.
 
+**Esta é a arquitetura atual até agora.**
+<img src="assets/14-cfn-createigw.png">
 
+## Criar primeira sub-rede
+Nosso terceiro passo do Laboratório 1 é criar nossa primeira sub-rede
 
+1. Adicione o seguinte ao final do arquivo YAML chamado sfid-cfn-vpc.yaml e salve o arquivo.
+```yaml
+  # Create First Subnet
+  FirstSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MainVPC
+      CidrBlock: 10.0.10.0/24
+      AvailabilityZone: "us-east-1a"
+      Tags:
+      - Key: Name
+        Value: Public Subnet A - SFID
+```
 
+2. Abra o console do AWS CloudFormation Stacks 
+3. Selecione o nome da pilha “SFID-CFN-VPC” na lista de pilhas
+4. Clique no botão **Atualizar**.
+5. Em Preparar modelo, escolha **Substituir modelo atual**.
+6. Em Origem do modelo, escolha **Carregar um arquivo de modelo**.
+7. Clique no botão **Escolher arquivo** e navegue até onde o sfid-cfn-vpc.yaml foi salvo
+8. Selecione o arquivo sfid-cfn-vpc.yaml e clique em **Abrir**.
+9. Clique em **Avançar**.
+10. Você pode deixar os Parâmetros já que nada foi definido e clicar em **Avançar**.
+11. Você pode deixar Configurar opções de pilha como padrão e clicar em **Avançar**.
+12. Verifique a lista Alterações na visualização do conjunto de alterações; que mostra como as alterações podem afetar os recursos em execução; neste caso, elas não afetarão nosso modelo.
+13. Clique em **Enviar**.
+14. Você pode clicar no botão de atualização algumas vezes até ver o status **UPDATE_COMPLETE**.
+Navegue até o console do AWS VPC para verificar a primeira sub-rede.
+
+**Esta é a arquitetura atual até agora.**
+<img src="assets/14-2-cfn-create1stsubnet.png">
