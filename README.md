@@ -1,1 +1,1 @@
-Laboratório 1 - Imersion Day AWS 2025
+Laboratório 2 - Imersion Day AWS 2025
