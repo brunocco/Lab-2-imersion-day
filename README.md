@@ -1,4 +1,4 @@
-# Laboratório dia 2 - Imersion Day AWS 2025
+# Laboratório dia 2 - Immersion Day AWS 2025
 Passo a Passo do Laboratório realizado durante o AWS Immersion Day (Dia 2), com foco na implementação do AWS Cloudformation na configuracao de VPC e instancias EC2. serão dois laboratórios que se complementarão.
 
 ## AWS CloudFormation – Dia de Imersão Geral
