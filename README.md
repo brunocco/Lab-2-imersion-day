@@ -523,3 +523,149 @@ Outputs:
 ```
 
 
+# Laboratório 2 - Configurando uma instância EC2
+## Visão geral
+Este laboratório começará com o modelo mais básico imitando o laboratório prático Compute – Amazon EC2 para o AWS General Immersion Day.
+
+Ao final deste laboratório, você será capaz de:
+
+Escreva um modelo básico do CloudFormation que crie uma instância EC2 Linux, que atuará como um servidor Web.
+<img src="assets/Lab2-cfn-lab2-main.png">
+
+## Iniciar instância EC2
+Vamos criar uma instância EC2 simples usando CloudFormation
+
+1. Abra um editor de texto e crie um arquivo YAML vazio chamado:
+```yaml
+sfid-cfn-ec2.yaml
+```
+
+2. Copie e cole o modelo de exemplo do CloudFormation que define um EC2 e salve o arquivo.
+```yaml
+Resources:
+# Create EC2 Linux
+  WebServerInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: "ami-07caf09b362be10b8"
+      InstanceType: t3a.micro
+```
+
+3. Abra o console do AWS CloudFormation 
+4. Clique em **Criar pilha**.
+5. Em Preparar modelo, escolha **Modelo pronto**.
+6. Em Origem do modelo, escolha **Carregar um arquivo de modelo**.
+7. Clique no botão **Escolher arquivo** e navegue até onde o sfid-cfn-ec2.yaml foi salvo.
+8. Selecione o arquivo sfid-cfn-ec2.yaml e clique em **Abrir**.
+9. Clique em **Avançar**.
+10. Forneça um nome para a pilha e clique em **Avançar**.
+- O nome da pilha identifica a pilha. Use um nome para ajudar a distinguir a finalidade desta pilha.
+- Recomendamos o uso para o propósito do nosso laboratório: SFID-CFN-EC2
+11. Você pode deixar Configurar opções de pilha como padrão e clicar em **Avançar**.
+12. Na página Revisar SFID-CFN-EC2 , role para baixo até o final e escolha Enviar .
+13. Você pode clicar no botão de atualização algumas vezes até ver o status **CREATE_COMPLETE**.
+14. Abra o console do AWS EC2 para verificar o EC2 criado usando o AWS CloudFormation.
+Agora criamos uma instância EC2 simples, porém ela não está rotulada e não passamos os dados do usuário.
+
+## Marcar e passar dados do usuário para a instância EC2
+Vamos marcar nosso recurso fornecendo um nome para nossa instância e passar os Dados do Usuário para nossa Instância EC2.
+
+1. Adicione o seguinte ao final do arquivo YAML chamado sfid-cfn-ec2.yaml e salve o arquivo.
+```yaml
+      Tags:
+          - Key: Name
+            Value: Web Server for IMD
+      UserData: 
+        Fn::Base64:
+          !Sub |
+          #!/bin/sh
+          yum -y install httpd
+          chkconfig httpd on
+          systemctl start httpd
+          echo '<html><center><text="#252F3E" style="font-family: Amazon Ember"><h1>AWS CloudFormation is Fun !!!</h1>' > /var/www/html/index.html
+          echo '<h3><img src="https://d0.awsstatic.com/logos/powered-by-aws.png"></h3></html>' >> /var/www/html/index.html
+```
+
+2. Abra o console do AWS CloudFormation Stacks 
+3. Selecione o nome da pilha “SFID-CFN-EC2” na lista de pilhas
+4. Clique no botão **Atualizar**.
+5. Em Preparar modelo, escolha **Substituir modelo atual**.
+6. Em Origem do modelo, escolha **Carregar um arquivo de modelo**.
+7. Clique no botão **Escolher arquivo** e navegue até onde o sfid-cfn-ec2.yaml foi salvo
+8. Selecione o arquivo sfid-cfn-ec2.yaml e clique em **Abrir**.
+9. Clique em **Avançar**.
+10. Você pode deixar os Parâmetros já que nada foi definido e clicar em **Avançar**.
+11. Você pode deixar Configurar opções de pilha como padrão e clicar em **Avançar**.
+12. Verifique a lista Alterações na visualização do conjunto de alterações; que mostra como as alterações podem afetar os recursos em execução; neste caso, elas não afetarão nosso modelo.
+13. Clique em **Enviar**.
+14. Você pode clicar no botão de atualização algumas vezes até ver o status **UPDATE_COMPLETE**.
+Navegue até o console do AWS EC2 para verificar a etiqueta de nome EC2 e acessar outras características do site.
+
+Prestando atenção às configurações da instância do EC2, você notará que a instância foi iniciada na VPC padrão, usando um grupo de segurança padrão que não permite tráfego para a Internet e o script de dados do usuário sendo executado somente durante a inicialização da instância. No nosso caso, esse não é o objetivo final do nosso laboratório.
+
+Dito isso, encerraremos a instância do EC2 e iniciaremos uma nova instância do EC2 no VPC Lab com as configurações adequadas usando o AWS CloudFormation.
+
+## Encerrar instância EC2
+Vamos encerrar a instância do EC2 no console do CloudFormation
+
+1. Abra o console do AWS CloudFormation Stacks 
+2. Selecione o nome da pilha “SFID-CFN-EC2” na lista de pilhas
+3. Clique no botão **Excluir**, que solicitará que você confirme se deseja excluir a pilha, incluindo seus recursos.
+<img src="assets/Lab2-3-cfn-lab2-delete1.png">
+
+4. Clique em **Excluir pilha**
+<img src="assets/Lab2-4-cfn-lab2-delete2.png">
+
+Observe que o nome da pilha "SFID-CFN-EC2" mudará de status para "Exclusão em andamento" por um momento até desaparecer. Você também pode verificar o Painel do EC2 e confirmar se a instância do EC2 foi excluída.
+
+## Inicie a instância do EC2 no Lab VPC
+Agora que temos um melhor entendimento sobre como o modelo AWS CloudFormation funciona e as configurações necessárias para que um host da web seja iniciado com as configurações adequadas, vamos criar uma instância EC2 na VPC adequada usando o CloudFormation
+
+1. Adicione o seguinte ao topo do arquivo YAML chamado sfid-cfn-ec2.yaml 
+```yaml
+Parameters:
+  PublicSubnet:
+    Description: Select a Public Subnet created in the "VPC for SFID CFN" Lab (Hint - Search for "SFID")
+    Type: 'AWS::EC2::Subnet::Id'
+  SecurityGroup:
+    Description: Select the Security Group created in the "VPC for SFID CFN" Lab (Hint - Search for "SFID")
+    Type: 'AWS::EC2::SecurityGroup::Id'
+```
+2. Adicione o seguinte ao final do arquivo YAML chamado sfid-cfn-ec2.yaml e salve o arquivo.
+```yaml
+      NetworkInterfaces:
+        - GroupSet:
+            - !Ref SecurityGroup
+          AssociatePublicIpAddress: 'true'
+          DeviceIndex: '0'
+          DeleteOnTermination: 'true'
+          SubnetId: !Ref PublicSubnet
+```
+
+3. Abra o console do AWS CloudFormation 
+4. Clique em **Criar pilha**.
+5. Em Preparar modelo, escolha **Modelo pronto**.
+6. Em Origem do modelo, escolha **Carregar um arquivo de modelo**.
+7. Clique no botão **Escolher arquivo** e navegue até onde o sfid-cfn-ec2.yaml foi salvo.
+8. Selecione o arquivo sfid-cfn-ec2.yaml e clique em **Abrir**.
+9. Clique em **Avançar**.
+10. Forneça um nome para a pilha, defina os parâmetros desejados e clique em **Avançar**.
+- Recomendamos o uso para o propósito do nosso laboratório.SFID-CFN-EC2
+- Selecione qualquer uma das **sub-redes públicas A ou B** criadas no laboratório "VPC para SFID CFN" **(Dica: Pesquise por "SFID")**
+- Selecione **webserver-sg** criado no laboratório "VPC para SFID CFN" **(Dica: Procure por "SFID")**
+<img src="assets/Lab2-10-cfn-lab2-parameters.png">
+
+11. Você pode deixar Configurar opções de pilha como padrão e clicar em **Avançar**.
+12. Na página Revisar SFID-CFN-EC2 , role para baixo até o final e escolha **Enviar**.
+13. Você pode clicar no botão de atualização algumas vezes até ver o status **CREATE_COMPLETE**.
+14. Abra o console do AWS EC2 para verificar o EC2 criado usando o AWS CloudFormation.
+Verifique a aba “Segurança” e “Rede” no Console do AWS EC2 e você notará que a instância foi iniciada com base nas informações que selecionamos no prompt “Parâmetros”.
+<img src="assets/Lab2-5-cfn-lab2-security.png">
+
+<img src="assets/Lab2-6-cfn-lab2-networking.png">
+
+>**Site:**
+>O site levará cerca de um minuto para ficar disponível.
+
+Você também pode obter o endereço IP público atribuído à instância do Amazon EC2, que exibirá a página abaixo:
+<img src="assets/Lab2-7-cfn-lab2-final.png">
