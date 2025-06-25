@@ -99,7 +99,7 @@ Este laboratório começará com o modelo mais básico imitando o VPC Hands-on L
 
 Ao final deste laboratório, você será capaz de:
 
-Escreva um modelo básico do CloudFormation que crie uma VPC, sub-redes, tabela de roteamento e grupo de segurança.
+implantar um modelo básico do CloudFormation que crie uma VPC, sub-redes, tabela de roteamento e grupo de segurança.
 <img src="assets/cfn-lab1-main.png">
 
 ##Criar uma VPC
