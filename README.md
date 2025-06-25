@@ -793,7 +793,7 @@ Outputs:
 ```
 
 ## Limpar
-## Excluindo pilhas (limpeza)
+Excluindo pilhas (limpeza)
 1. Abra o console do AWS CloudFormation 
 2. Na página Pilhas do console do CloudFormation, selecione a pilha **SFID-CFN-EC2** que deseja excluir. A pilha deve estar em execução.
 - Os recursos do EC2 na pilha criada dependem da VPC. Você deve excluir primeiro a pilha **SFID-CFN-EC2** e, em seguida, a pilha **SFID-CFN-VPC**.
