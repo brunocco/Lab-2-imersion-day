@@ -669,3 +669,138 @@ Verifique a aba “Segurança” e “Rede” no Console do AWS EC2 e você nota
 
 Você também pode obter o endereço IP público atribuído à instância do Amazon EC2, que exibirá a página abaixo:
 <img src="assets/Lab2-7-cfn-lab2-final.png">
+
+## Complementos
+Nossa última etapa do Laboratório 2 é adicionar uma descrição ao modelo do CloudFormation e adicionar saídas.
+
+1. Adicione o seguinte ao **topo** do arquivo YAML chamado sfid-cfn-ec2.yaml
+```yaml
+Description: Introduction to CloudFormation SFID - Elastic Compute Cloud (EC2)
+
+```
+2. Adicione o seguinte ao **final** do arquivo YAML chamado sfid-cfn-ec2.yaml e salve o arquivo.
+```yaml
+Outputs:
+  PublicDNS:
+    Value: !Join 
+      - ''
+      - - 'http://'
+        - !GetAtt 
+          - WebServerInstance
+          - PublicDnsName
+    Description: Web Host Public URL
+```
+
+3. Abra o console do AWS CloudFormation Stacks 
+4. Selecione o nome da pilha “SFID-CFN-EC2” na lista de pilhas
+5. Clique no botão **Atualizar**.
+6. Em Preparar modelo, escolha **Substituir modelo atual**.
+7. Em Origem do modelo, escolha **Carregar um arquivo de modelo**.
+8. Clique no botão **Escolher arquivo** e navegue até onde o sfid-cfn-ec2.yaml foi salvo
+9. Selecione o arquivo sfid-cfn-ec2.yaml e clique em **Abrir**.
+10. Clique em **Avançar**.
+11. Você pode deixar os Parâmetros já que nada foi alterado e clicar em **Avançar**.
+12. Você pode deixar Configurar opções de pilha como padrão e clicar em **Avançar**.
+13. Verifique a lista Alterações na visualização do conjunto de alterações; que mostra como as alterações podem afetar os recursos em execução; neste caso, elas não afetarão nosso modelo.
+14. Clique em **Enviar**.
+15. Você pode clicar no botão de atualização algumas vezes até ver o status **UPDATE_COMPLETE**.
+Navegue até as guias “Stack Info” e “Outputs” do SFID-CFN-EC2 e observe as alterações feitas na pilha.
+
+Você pode usar o hiperlink fornecido pelas "Saídas" para abrir o site diretamente.
+<img src="assets/Lab2-11-cfn-lab2-final.png">
+
+## Resumo do Laboratório 2
+Dividimos nosso modelo CloudFormation no seguinte e fornecemos uma recapitulação do modelo CloudFormation:
+
+- Lançamos uma instância EC2 na VPC padrão
+- Marcamos e passamos os dados do usuário para a instância EC2
+- Encerramos a instância EC2
+- Criamos uma nova instância EC2 na VPC do laboratório
+- Adicionamos uma descrição e saídas ao modelo para facilitar sua compreensão
+
+<img src="assets/Lab2-12-cfn-lab2-main.png">
+
+```yaml
+Description: Introduction to CloudFormation SFID - Elastic Compute Cloud (EC2)
+
+Parameters:
+  PublicSubnet:
+    Description: Select a Public Subnet created in the "VPC for SFID CFN" Lab (Hint - Search for "SFID")
+    Type: 'AWS::EC2::Subnet::Id'
+  SecurityGroup:
+    Description: Select the Security Group created in the "VPC for SFID CFN" Lab (Hint - Search for "SFID")
+    Type: 'AWS::EC2::SecurityGroup::Id'
+
+Resources:
+# Create EC2 Linux
+  WebServerInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: "ami-07caf09b362be10b8"
+      InstanceType: t3a.micro
+      Tags:
+          - Key: Name
+            Value: Web Server for IMD
+      UserData: 
+        Fn::Base64:
+          !Sub |
+          #!/bin/sh
+          yum -y install httpd
+          chkconfig httpd on
+          systemctl start httpd
+          echo '<html><center><text="#252F3E" style="font-family: Amazon Ember"><h1>AWS CloudFormation is Fun !!!</h1>' > /var/www/html/index.html
+          echo '<h3><img src="https://d0.awsstatic.com/logos/powered-by-aws.png"></h3></html>' >> /var/www/html/index.html
+      NetworkInterfaces:
+        - GroupSet:
+            - !Ref SecurityGroup
+          AssociatePublicIpAddress: 'true'
+          DeviceIndex: '0'
+          DeleteOnTermination: 'true'
+          SubnetId: !Ref PublicSubnet
+
+Outputs:
+  PublicDNS:
+    Value: !Join 
+      - ''
+      - - 'http://'
+        - !GetAtt 
+          - WebServerInstance
+          - PublicDnsName
+    Description: Web Host Public URL
+```
+
+## Limpar
+## Excluindo pilhas (limpeza)
+1. Abra o console do AWS CloudFormation 
+2. Na página Pilhas do console do CloudFormation, selecione a pilha **SFID-CFN-EC2** que deseja excluir. A pilha deve estar em execução.
+- Os recursos do EC2 na pilha criada dependem da VPC. Você deve excluir primeiro a pilha **SFID-CFN-EC2** e, em seguida, a pilha **SFID-CFN-VPC**.
+3. No painel de detalhes da pilha, escolha **Excluir**.
+4. Selecione **Excluir pilha** quando solicitado.
+<img src="assets/Lab2-13-cfn-lab2-delete2.png">
+
+5. Aguarde até ver no status **DELETE_COMPLETE**.
+6. Repita a etapa acima para excluir a pilha **SFID-CFN-VPC**
+<img src="assets/Lab2-14-cfn-cleanup-vpc.png">
+
+
+# Conclusão
+Conclusão
+Parabéns por concluir os dois laboratórios!
+
+Neste workshop, você desenvolveu dois modelos do AWS CloudFormation que permitem lançar um site hospedado em uma instância EC2 dentro de uma VPC personalizada em apenas alguns minutos.
+A ideia principal deste exercício foi fornecer modelos funcionais e práticos que podem ser facilmente adaptados para atender diferentes necessidades de infraestrutura.
+
+No Laboratório 1, você construiu toda a estrutura de rede utilizando CloudFormation — criando uma VPC, sub-redes públicas e privadas, tabelas de rotas e grupos de segurança. Já no Laboratório 2, você colocou essa estrutura em uso, automatizando o provisionamento de uma instância EC2 configurada como servidor web, com scripts de inicialização, marcações e parâmetros reutilizáveis.
+
+Esses dois labs se complementam e fornecem uma base sólida para aplicar o conceito de infraestrutura como código (IaC) na AWS. Além disso, você aprendeu como:
+- Criar ambientes isolados e seguros com VPCs personalizadas;
+- Automatizar recursos com YAML e o CloudFormation;
+- Tornar modelos mais reutilizáveis e dinâmicos com parâmetros e saídas;
+- Usar boas práticas para manutenção e atualização de pilhas.
+
+Continue praticando, explore novos recursos e adapte esses modelos conforme os desafios do seu dia a dia na nuvem.
+
+Abaixo estão alguns recursos para aprender mais sobre o AWS CloudFormation
+- 🌩️ [Visão geral do AWS CloudFormation](https://aws.amazon.com/pt/cloudformation/)
+- 📚 [Documentação oficial do AWS CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html)
+
