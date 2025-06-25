@@ -242,3 +242,284 @@ Navegue até o console do AWS VPC para verificar a primeira sub-rede.
 
 **Esta é a arquitetura atual até agora.**
 <img src="assets/14-2-cfn-create1stsubnet.png">
+
+## Criar sub-rede adicional
+Nossa quarta etapa do Laboratório 1 é criar uma sub-rede adicional
+
+1. Adicione o seguinte ao final do arquivo YAML chamado sfid-cfn-vpc.yaml e salve o arquivo.
+```yaml
+  # Creating additional subnet
+  SecondSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MainVPC
+      CidrBlock: 10.0.20.0/24
+      AvailabilityZone: "us-east-1b"
+      Tags:
+      - Key: Name
+        Value: Public Subnet B - SFID
+```
+
+2. Abra o console do AWS CloudFormation Stacks 
+3. Selecione o nome da pilha “SFID-CFN-VPC” na lista de pilhas
+4. Clique no botão Atualizar .
+5. Em Preparar modelo, escolha Substituir modelo atual .
+6. Em Origem do modelo, escolha Carregar um arquivo de modelo .
+7. Clique no botão Escolher arquivo e navegue até onde o sfid-cfn-vpc.yaml foi salvo
+8. Selecione o arquivo sfid-cfn-vpc.yaml e clique em Abrir .
+9. Clique em Avançar .
+10. Você pode deixar os Parâmetros já que nada foi definido e clicar em Avançar .
+11. Você pode deixar Configurar opções de pilha como padrão e clicar em Avançar .
+12. Verifique a lista Alterações na visualização do conjunto de alterações; que mostra como as alterações podem afetar os recursos em execução; neste caso, elas não afetarão nosso modelo.
+13. Clique em Enviar .
+14. Você pode clicar no botão de atualização algumas vezes até ver o status UPDATE_COMPLETE .
+Navegue até o console do AWS VPC para verificar a sub-rede adicional.
+
+**Esta é a arquitetura atual até agora.**
+<img src="assets/14-3-cfn-create2ndsubnet.png">
+
+## Configurando a tabela de roteamento
+Nosso quinto passo do Laboratório 1 é criar uma tabela de roteamento pública e associar as duas sub-redes.
+
+1. Adicione o seguinte ao final do arquivo YAML chamado sfid-cfn-vpc.yaml e salve o arquivo.
+```yaml
+  # Create and Set Public Route Table
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:  !Ref MainVPC
+      Tags:
+      - Key: Name
+        Value: Public Route Table
+
+  PublicRoute:
+    Type: 'AWS::EC2::Route'
+    DependsOn: AttachIGW
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  # Associate Public Subnets to Public Route Table
+  PublicSubnet1RouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      SubnetId: !Ref FirstSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnet2RouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      SubnetId: !Ref SecondSubnet
+      RouteTableId: !Ref PublicRouteTable
+```
+
+2. Abra o console do AWS CloudFormation Stacks 
+3. Selecione o nome da pilha “SFID-CFN-VPC” na lista de pilhas
+4. Clique no botão **Atualizar**.
+5. Em Preparar modelo, **escolha Substituir modelo atual**.
+6. Em Origem do modelo, escolha **Carregar um arquivo de modelo**.
+7. Clique no botão **Escolher arquivo** e navegue até onde o sfid-cfn-vpc.yaml foi salvo
+8. Selecione o arquivo sfid-cfn-vpc.yaml e clique em **Abrir**.
+9. Clique em **Avançar**.
+10. Você pode deixar os Parâmetros já que nada foi definido e clicar em **Avançar**.
+11. Você pode deixar Configurar opções de pilha como padrão e clicar em **Avançar**.
+12. Verifique a lista Alterações na visualização do conjunto de alterações; que mostra como as alterações podem afetar os recursos em execução; neste caso, elas não afetarão nosso modelo.
+13. Clique em **Enviar**.
+14. Você pode clicar no botão de atualização algumas vezes até ver o status **UPDATE_COMPLETE**.
+Navegue até o console do AWS VPC para verificar a tabela de roteamento público e associar as 2 sub-redes.
+
+**Esta é a arquitetura atual até agora.**
+<img src="assets/14-4-cfn-creatertt.png">
+
+## Criar grupo de segurança
+Nossa sexta etapa do Laboratório 1 é criar um Grupo de Segurança
+
+1. Adicione o seguinte ao final do arquivo YAML chamado sfid-cfn-vpc.yaml e substitua o endereço IP abaixo pelo seu endereço IP público. Depois, salve o arquivo.
+```yaml
+  # Create Security Group for the following:
+  MainSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group for Web Server
+      VpcId: !Ref MainVPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+  # Replace the IP address below by your Public IP Address:
+        CidrIp: 127.0.0.1/32
+      Tags:
+      - Key: Name
+        Value: Web Server Security Group - SFID
+```
+
+2. Abra o console do AWS CloudFormation Stacks 
+3. Selecione o nome da pilha “SFID-CFN-VPC” na lista de pilhas
+4. Clique no botão Atualizar .
+5. Em Preparar modelo, escolha Substituir modelo atual .
+6. Em Origem do modelo, escolha Carregar um arquivo de modelo .
+7. Clique no botão Escolher arquivo e navegue até onde o sfid-cfn-vpc.yaml foi salvo
+8. Selecione o arquivo sfid-cfn-vpc.yaml e clique em Abrir .
+9. Clique em Avançar .
+10. Você pode deixar os Parâmetros já que nada foi definido e clicar em Avançar .
+11. Você pode deixar Configurar opções de pilha como padrão e clicar em Avançar .
+12. Verifique a lista Alterações na visualização do conjunto de alterações; que mostra como as alterações podem afetar os recursos em execução; neste caso, elas não afetarão nosso modelo.
+13. Clique em Enviar .
+14. Você pode clicar no botão de atualização algumas vezes até ver o status UPDATE_COMPLETE .
+Navegue até o console do AWS VPC para verificar o Grupo de Segurança.
+
+**Esta é a arquitetura atual até agora.**
+<img src="assets/14-5-cfn-createsg.png">
+
+## Complementos
+Nossa última etapa do Laboratório 1 é adicionar uma descrição ao modelo do CloudFormation e adicionar saídas.
+
+1. Adicione o seguinte ao **topo** do arquivo YAML chamado sfid-cfn-vpc.yaml
+```yaml
+Description: Introduction to CloudFormation SFID - Virtual Private Cloud (VPC)
+```
+2. Adicione o seguinte ao final do arquivo YAML chamado sfid-cfn-vpc.yaml e salve o arquivo.
+```yaml
+Outputs:
+  MainSubnet:
+    Value: !Ref FirstSubnet
+    Description: Public Subnet ID with Direct Internet Route
+
+  MainSecurityGroup:
+    Value: !Ref MainSecurityGroup
+    Description: Security Group ID for the Web Server
+```
+
+3. Abra o console do AWS CloudFormation Stacks 
+4. Selecione o nome da pilha “SFID-CFN-VPC” na lista de pilhas
+5. Clique no botão **Atualizar**.
+6. Em Preparar modelo, escolha **Substituir modelo atual**.
+7. Em Origem do modelo, escolha **Carregar um arquivo de modelo**.
+8. Clique no botão **Escolher arquivo** e navegue até onde o sfid-cfn-vpc.yaml foi salvo
+9. Selecione o arquivo sfid-cfn-vpc.yaml e clique em **Abrir**.
+10. Clique em **Avançar**.
+11. Você pode deixar os Parâmetros já que nada foi definido e clicar em **Avançar**.
+12. Você pode deixar Configurar opções de pilha como padrão e clicar em **Avançar**.
+13. Verifique a lista Alterações na visualização do conjunto de alterações; que mostra como as alterações podem afetar os recursos em execução; neste caso, elas não afetarão nosso modelo.
+14. Clique em **Enviar**.
+15. Você pode clicar no botão de atualização algumas vezes até ver o status **UPDATE_COMPLETE**.
+Navegue até as guias “Stack Info” e “Outputs” do SFID-CFN-VPC e observe as alterações feitas na pilha.
+
+## Resumo do Laboratório 1
+Dividimos nosso modelo CloudFormation no seguinte e fornecemos uma recapitulação do modelo CloudFormation:
+
+- Criei uma VPC, marquei-a fornecendo um nome e configurei as opções de DNS
+- Criei um Gateway de Internet e o conectei à VPC
+- Criei duas sub-redes na VPC
+- Criou uma tabela de rotas pública e associou as duas sub-redes
+- Criei um Grupo de Segurança que permite acesso de entrada em HTTP para o Laboratório 2
+- Adicionei uma Descrição e Saídas para melhor compreensão do modelo.
+
+Agora que definimos a parte de rede para este laboratório, passaremos para o próximo laboratório para configurar uma instância EC2 e atuar como servidor web usando o CloudFormation.
+<img src="assets/resumo-cfn-lab1-main.png">
+```yaml
+Description: Introduction to CloudFormation SFID - Virtual Private Cloud (VPC)
+Resources:
+
+  # Create a VPC
+  MainVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: 'true'
+      EnableDnsSupport: 'true'
+      Tags:
+      - Key: Name
+        Value: VPC for SFID CFN
+
+# Create and attach InternetGateway
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    DependsOn: MainVPC
+
+  AttachIGW:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref MainVPC
+      InternetGatewayId: !Ref InternetGateway
+
+# Create First Subnet
+  FirstSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MainVPC
+      CidrBlock: 10.0.10.0/24
+      AvailabilityZone: "us-east-1a"
+      Tags:
+      - Key: Name
+        Value: Public Subnet A - SFID
+
+# Creating additional subnet
+  SecondSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref MainVPC
+      CidrBlock: 10.0.20.0/24
+      AvailabilityZone: "us-east-1b"
+      Tags:
+      - Key: Name
+        Value: Public Subnet B - SFID
+
+# Create and Set Public Route Table
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:  !Ref MainVPC
+      Tags:
+      - Key: Name
+        Value: Public Route Table
+
+  PublicRoute:
+    Type: 'AWS::EC2::Route'
+    DependsOn: AttachIGW
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  # Associate Public Subnets to Public Route Table
+  PublicSubnet1RouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      SubnetId: !Ref FirstSubnet
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnet2RouteTableAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      SubnetId: !Ref SecondSubnet
+      RouteTableId: !Ref PublicRouteTable
+      
+  # Create Security Group for the following:
+  MainSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group for Web Server
+      VpcId: !Ref MainVPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+  # Replace the IP address below by your Public IP Address:
+        CidrIp: 127.0.0.1/32
+      Tags:
+      - Key: Name
+        Value: Web Server Security Group - SFID
+
+Outputs:
+  MainSubnet:
+    Value: !Ref FirstSubnet
+    Description: Public Subnet ID with Direct Internet Route
+
+  MainSecurityGroup:
+    Value: !Ref MainSecurityGroup
+    Description: Security Group ID for the Web Server
+```
+
+
